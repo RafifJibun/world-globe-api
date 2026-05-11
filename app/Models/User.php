@@ -2,23 +2,35 @@
 
 namespace App\Models;
 
-use Filament\Models\Contracts\FilamentUser; // 1. Import ini
-use Filament\Panel; // 2. Import ini
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class User extends Authenticatable implements FilamentUser // 3. Tambahkan implements ini
+class User extends Authenticatable implements FilamentUser
 {
-    use Notifiable;
+    use HasFactory, Notifiable;
 
-    // ... kode yang sudah ada (fillable, hidden, dll) ...
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+    ];
 
-    // 4. Tambahkan fungsi ini di bagian bawah
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+
     public function canAccessPanel(Panel $panel): bool
     {
-        // Izinkan email lo buat masuk ke admin
-        return str_ends_with($this->email, '@gmail.com'); 
-        // Atau kalau mau lebih aman, pakai email spesifik:
-        // return $this->email === 'rafifakbarmaliqfirdaus@gmail.com';
+        // Izinkan email lo buat masuk ke dashboard admin
+        return $this->email === 'rafifakbarmaliqfirdaus@gmail.com';
     }
 }
